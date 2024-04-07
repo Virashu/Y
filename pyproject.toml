@@ -10,6 +10,9 @@ python = "^3.11"
 Flask = "^3.0.2"
 sqlalchemy = "^2.0.29"
 
+[tool.poetry.scripts]
+start = "y.cli:main"
+
 
 [build-system]
 requires = ["poetry-core"]
