@@ -6,15 +6,7 @@
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-  <div class="navbar">
-    {% for page in pages %}
-      <div class="navbar-link">
-        <a href="{{ urlfor(page) }}">
-          {{ page }}
-        </a>
-      </div>
-    {% endfor %}
-  </div>
+  {% include "header.html" %}
   {% block content %}{% endblock %}
 </body>
 </html>

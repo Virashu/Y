@@ -10,7 +10,9 @@ class Posts(SqlAlchemyBase):
     id = sqlalchemy.Column(
         sqlalchemy.String, primary_key=True, unique=True
     )  # уникальный id. Предлагаю использовать uuid
-    author = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    author = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("users.username")
+    )
     text = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     creation_time = sqlalchemy.Column(
         sqlalchemy.DateTime, default=datetime.datetime.now
@@ -18,5 +20,7 @@ class Posts(SqlAlchemyBase):
     editing_time = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_answer = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     answer_to = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    user_id = sqlalchemy.Column(sqlalchemy.Integer, sqlalchemy.ForeignKey("users.id"))
+    user_id = sqlalchemy.Column(
+        sqlalchemy.String, sqlalchemy.ForeignKey("users.username")
+    )
     #  user = orm.relationship('User')

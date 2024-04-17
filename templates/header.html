@@ -1,0 +1,21 @@
+{% block header %}
+
+  <div class="navbar">
+    <div class="navbar-header">Y</div>
+
+    {% for page in pages %}
+      <div class="navbar-link">
+        <a href="{{ url_for(page) }}">
+          {{ page }}
+        </a>
+      </div>
+    {% endfor %}
+
+    {% if user and user.is_authenticated %}
+      <a href="{{ url_for('profile') + '?u=' + user.username }}">{{ user.name }}</a>
+    {% else %}
+      <!-- Login/Register -->
+    {% endif %}
+  </div>
+
+{% endblock %}

@@ -9,6 +9,9 @@ readme = "README.md"
 python = "^3.11"
 Flask = "^3.0.2"
 sqlalchemy = "^2.0.29"
+wtforms = "^3.1.2"
+flask-login = "^0.6.3"
+flask-wtf = "^1.2.1"
 
 [tool.poetry.scripts]
 start = "y.cli:main"
