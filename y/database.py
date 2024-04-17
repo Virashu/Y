@@ -18,7 +18,8 @@ def create_user(name, email, hashed_password):
     db_sess.commit()
 
 
-def create_post(): ...
+def create_post():
+    ...
 
 
 def edit_user(id: str, name, description, email, hashed_password):
@@ -32,7 +33,8 @@ def edit_user(id: str, name, description, email, hashed_password):
     db_sess.commit()
 
 
-def edit_post(): ...
+def edit_post():
+    ...
 
 
 def delete_user(id: str):
@@ -41,7 +43,8 @@ def delete_user(id: str):
     db_sess.commit()
 
 
-def delete_post(): ...
+def delete_post():
+    ...
 
 
 def get_all_users():
@@ -58,7 +61,9 @@ def get_user_by_id(id: str):
     return user
 
 
-def get_all_posts(): ...
+def get_all_posts():
+    ...
 
 
-def get_post_by_id(): ...
+def get_post_by_id():
+    ...
