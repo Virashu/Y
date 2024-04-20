@@ -1,6 +1,7 @@
 from . import db_session
 from .post import Posts
 from .user import User
+import uuid
 
 db_session.global_init("db/y.db")
 
@@ -24,7 +25,19 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     return user
 
 
-def create_post(): ...
+def create_post(username, text):
+    db_sess = db_session.create_session()
+    user = db_sess.query(User).filter(User.username == username).first()
+    if user:
+        post = Posts()
+        post.id = str(uuid.uuid4())
+        post.author = user.username
+        post.text = text
+        db_sess.add(post)
+        db_sess.commit()
+    else:
+        return None
+    return post
 
 
 def edit_user(username, name, description, email, hashed_password):

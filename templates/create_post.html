@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}
+Создание поста
+{% endblock %}
+
+{% block content %}
+
+<form action="" method="post">
+        <p>
+            {{ form.text(class="form-control", type="string", size=100) }}<br>
+            {% for error in form.text.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+        <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
+        <p>{{ form.cancel(type="submit", class="btn btn-primary") }}</p>
+    </form>
+{% endblock %}

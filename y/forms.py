@@ -29,3 +29,9 @@ class SignupForm(flask_wtf.FlaskForm):
     )
     remember_me = wtforms.BooleanField("Remember me")
     submit = wtforms.SubmitField("Sign up")
+
+
+class CreatePostForm(flask_wtf.FlaskForm):
+    text = wtforms.StringField(validators=[DataRequired()])
+    submit = wtforms.SubmitField("Создать")
+    cancel = wtforms.SubmitField("Отмена")

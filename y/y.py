@@ -6,7 +6,7 @@ from .database import db_session
 from .database.user import User
 from .database import database
 
-from .forms import LoginForm, SignupForm
+from .forms import LoginForm, SignupForm, CreatePostForm
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
 
@@ -81,8 +81,9 @@ def login():
 
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
+    if flask.request.method == "POST":
+        return flask.redirect("/create-post")
     username = flask.request.args.get("u", None)
-
     if username:
         user = (
             db_session.create_session()
@@ -95,3 +96,26 @@ def profile():
         if not user:
             return flask.redirect("/login")
     return flask.render_template("profile.html", pages=pages, user=user)
+
+
+@app.route("/create-post", methods=["GET", "POST"])
+def create_post():
+    form = CreatePostForm()
+    if form.submit.data:
+        username = flask.request.args.get("u", None)
+        if username:
+            user = (
+                db_session.create_session()
+                .query(User)
+                .filter(User.username == username)
+                .first()
+            )
+        else:
+            user = flask_login.current_user
+            if not user:
+                return flask.redirect("/login")
+        post = database.create_post(user.username, form.text.data)
+        return flask.redirect("/profile")
+    if form.cancel.data:
+        return flask.redirect("/profile")
+    return flask.render_template("create_post.html", pages=pages, form=form)
