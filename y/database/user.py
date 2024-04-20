@@ -17,7 +17,7 @@ class User(SqlAlchemyBase, flask_login.UserMixin):
     creation_date = sqlalchemy.Column(
         sqlalchemy.DateTime, default=datetime.datetime.now
     )
-    #  posts = orm.relationship("Posts", back_populates='user')
+    posts = sqlalchemy.orm.relationship("Posts", back_populates='user')
 
     def get_id(self):
         return str(self.username)

@@ -77,7 +77,12 @@ def get_user_by_username(username: str):
     return user
 
 
-def get_all_posts(): ...
+def get_all_posts():
+    db_sess = db_session.create_session()
+    res = []
+    for post in db_sess.query(Posts).all():
+        res.append(post)
+    return res
 
 
 def get_post_by_id(): ...

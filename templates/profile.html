@@ -12,6 +12,11 @@
     <button type="submit" class="btn btn-primary" name="create">Создать пост</button>
   </form>
   {% for post in posts %}
-    <p>{{ post }}</p>
+    <p>
+      {{ post.author }}
+      {{ post.creation_time }}
+      <br>
+      {{ post.text }}
+    </p>
   {% endfor %}
 {% endblock %}

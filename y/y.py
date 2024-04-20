@@ -30,8 +30,9 @@ def load_user(user_id):
 @app.route("/", methods=["GET", "POST"])
 def index():
     user = flask_login.current_user
-
-    return flask.render_template("index.html", pages=pages, user=user)
+    posts = database.get_all_posts()
+    return flask.render_template("index.html", pages=pages, user=user,
+                                 posts=posts[::-1])
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -95,7 +96,8 @@ def profile():
         user = flask_login.current_user
         if not user:
             return flask.redirect("/login")
-    return flask.render_template("profile.html", pages=pages, user=user)
+    posts = user.posts
+    return flask.render_template("profile.html", pages=pages, user=user, posts=posts[::-1])
 
 
 @app.route("/create-post", methods=["GET", "POST"])

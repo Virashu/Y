@@ -6,4 +6,12 @@
 
 {% block content %}
   <h1>Welcome to Y!</h1>
+  {% for post in posts %}
+    <p>
+      {{ post.author }}
+      {{ post.creation_time }}
+      <br>
+      {{ post.text }}
+    </p>
+  {% endfor %}
 {% endblock %}
