@@ -14,7 +14,7 @@ def hash(string: str) -> str:
 class LoginForm(flask_wtf.FlaskForm):
     username = wtforms.StringField("Username", validators=[DataRequired()])
     password = wtforms.PasswordField(
-        "Пароль", validators=[DataRequired()], filters=[hash]
+        "Password", validators=[DataRequired()], filters=[hash]
     )
     remember_me = wtforms.BooleanField("Remember me")
     submit = wtforms.SubmitField("Log in")
@@ -25,7 +25,7 @@ class SignupForm(flask_wtf.FlaskForm):
     email = wtforms.StringField("Email", validators=[DataRequired()])
     display_name = wtforms.StringField("Display name", validators=[DataRequired()])
     password = wtforms.PasswordField(
-        "Пароль", validators=[DataRequired()], filters=[hash]
+        "Password", validators=[DataRequired()], filters=[hash]
     )
     remember_me = wtforms.BooleanField("Remember me")
     submit = wtforms.SubmitField("Sign up")
@@ -33,5 +33,5 @@ class SignupForm(flask_wtf.FlaskForm):
 
 class CreatePostForm(flask_wtf.FlaskForm):
     text = wtforms.StringField(validators=[DataRequired()])
-    submit = wtforms.SubmitField("Создать")
-    cancel = wtforms.SubmitField("Отмена")
+    submit = wtforms.SubmitField("Create")
+    cancel = wtforms.SubmitField("Cancel")

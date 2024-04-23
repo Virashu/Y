@@ -7,16 +7,19 @@
 {% block content %}
   <h1>Welcome to Y!</h1>
 
-  <p>{{ user.name }} ({{ user.username }})</p>
+  <p>{{ user.display_name }} ({{ user.username }})</p>
   <form action="" method="post">
-    <button type="submit" class="btn btn-primary" name="create">Создать пост</button>
+    <button type="submit" class="btn btn-primary" name="create">Create post</button>
   </form>
   {% for post in posts %}
     <p>
-      {{ post.author }}
+      {{ post.user_display_name }}
       {{ post.creation_time }}
       <br>
       {{ post.text }}
+      <form action="" method="post" >
+        <button type="submit" class="btn btn-primary" name={{post.id}}>See comments</button>
+      </form>
     </p>
   {% endfor %}
 {% endblock %}

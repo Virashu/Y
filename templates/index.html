@@ -8,10 +8,13 @@
   <h1>Welcome to Y!</h1>
   {% for post in posts %}
     <p>
-      {{ post.author }}
+      {{ post.user_display_name }}
       {{ post.creation_time }}
       <br>
       {{ post.text }}
+      <form action="" method="post">
+        <button type="submit" class="btn btn-primary" name={{post.id}}>See comments</button>
+      </form>
     </p>
   {% endfor %}
 {% endblock %}
