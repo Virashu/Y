@@ -9,7 +9,12 @@ from .forms import CreatePostForm, EditProfileForm, LoginForm, SignupForm
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
 
-app = flask.Flask(__name__, template_folder=f"{ROOT}/templates")
+app = flask.Flask(
+    __name__,
+    template_folder=f"{ROOT}/templates",
+    static_folder=f"{ROOT}/static",
+    static_url_path="/static",
+)
 
 app.config["SECRET_KEY"] = "huh"
 
