@@ -4,7 +4,7 @@ from .user import User
 import uuid
 import datetime
 
-db_session.global_init("db/y.db")
+# db_session.global_init("db/y.db")
 
 
 def create_user(username, display_name, email, hashed_password) -> User | None:

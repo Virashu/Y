@@ -22,6 +22,9 @@ login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
 
+db_session.global_init(f"{ROOT}/runtime/y.db")
+
+
 @login_manager.user_loader
 def load_user(user_id):
     db_sess = db_session.create_session()
