@@ -35,3 +35,15 @@ class CreatePostForm(flask_wtf.FlaskForm):
     text = wtforms.StringField(validators=[DataRequired()])
     submit = wtforms.SubmitField("Create")
     cancel = wtforms.SubmitField("Cancel")
+
+
+class EditProfileForm(flask_wtf.FlaskForm):
+    username = wtforms.StringField("Username", validators=[DataRequired()])
+    email = wtforms.StringField("Email", validators=[DataRequired()])
+    password = wtforms.PasswordField(
+        "Password", validators=[DataRequired()], filters=[hash]
+    )
+    display_name = wtforms.StringField("Display name", validators=[DataRequired()])
+    description = wtforms.StringField("Description", validators=[DataRequired()])
+    submit = wtforms.SubmitField("Create")
+    cancel = wtforms.SubmitField("Cancel")

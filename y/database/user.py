@@ -11,7 +11,7 @@ class User(SqlAlchemyBase, flask_login.UserMixin):
 
     username = sqlalchemy.Column(sqlalchemy.String, primary_key=True, unique=True)
     display_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
-    description = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    description = sqlalchemy.Column(sqlalchemy.String, default="")
     email = sqlalchemy.Column(sqlalchemy.String, index=True, unique=True, nullable=True)
     hashed_password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     creation_date = sqlalchemy.Column(

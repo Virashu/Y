@@ -6,7 +6,7 @@ from .database import db_session
 from .database.user import User
 from .database import database
 
-from .forms import LoginForm, SignupForm, CreatePostForm
+from .forms import LoginForm, SignupForm, CreatePostForm, EditProfileForm
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
 
@@ -89,6 +89,8 @@ def profile():
     if flask.request.method == "POST":
         if "create" in flask.request.form:
             return flask.redirect("/create-post")
+        elif "edit-profile" in flask.request.form:
+            return flask.redirect("/edit-profile")
         else:
             request = flask.request.form.values()
             if "comments" in flask.request.form:
@@ -171,6 +173,34 @@ def edit_post():
     post = database.get_post_by_id(flask.request.values["post_id"])
     form.text.data = post["text"]
     return flask.render_template("create_post.html", pages=pages, form=form)
+
+
+@app.route("/edit-profile", methods=["GET", "POST"])
+def edit_profile():
+    form = EditProfileForm()
+    username = flask.request.args.get("u", None)
+    if username:
+        user = (
+            db_session.create_session()
+            .query(User)
+            .filter(User.username == username)
+            .first()
+        )
+    else:
+        user = flask_login.current_user
+        if not user:
+            return flask.redirect("/login")
+    if form.submit.data:
+        database.edit_user(form.username.data, form.display_name.data,
+                           form.description.data, form.email.data, form.password.data)
+        return flask.redirect("/profile")
+    if form.cancel.data:
+        return flask.redirect("/profile")
+    form.username.data = user.username
+    form.email.data = user.email
+    form.display_name.data = user.display_name
+    form.description.data = user.description
+    return flask.render_template("edit_profile.html", pages=pages, form=form)
 
 
 @app.route("/comments", methods=["GET", "POST"])

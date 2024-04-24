@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 
 {% block title %}
-Sign up
+Y
 {% endblock %}
 
 {% block content %}
 
-<h1>Sign up</h1>
-    <form action="" method="post">
-        {{ form.hidden_tag() }}
+<form action="" method="post">
         <p>
             {{ form.username.label }}<br>
             {{ form.username(class="form-control", type="string") }}<br>
@@ -26,16 +24,7 @@ Sign up
                   {{ error }}
               </div>
           {% endfor %}
-      </p>
-      <p>
-        {{ form.display_name.label }}<br>
-        {{ form.display_name(class="form-control", type="string") }}<br>
-        {% for error in form.display_name.errors %}
-            <div class="alert alert-danger" role="alert">
-                {{ error }}
-            </div>
-        {% endfor %}
-    </p>
+        </p>
         <p>
             {{ form.password.label }}<br>
             {{ form.password(class="form-control", type="password") }}<br>
@@ -45,8 +34,25 @@ Sign up
                 </div>
             {% endfor %}
         </p>
-        <p>{{ form.remember_me() }} {{ form.remember_me.label }}</p>
+        <p>
+            {{ form.display_name.label }}<br>
+            {{ form.display_name(class="form-control", type="string") }}<br>
+            {% for error in form.display_name.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
+        <p>
+            {{ form.description.label }}<br>
+            {{ form.description(class="form-control", type="string") }}<br>
+            {% for error in form.description.errors %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endfor %}
+        </p>
         <p>{{ form.submit(type="submit", class="btn btn-primary") }}</p>
-        <div>{{ message }}</div>
-    </form>
+        <p>{{ form.cancel(type="submit", class="btn btn-primary") }}</p>
+</form>
 {% endblock %}

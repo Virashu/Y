@@ -5,11 +5,12 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Welcome to Y!</h1>
+  <h1>{{ user.display_name }} ({{ user.username }})</h1>
 
-  <p>{{ user.display_name }} ({{ user.username }})</p>
+  <p>{{ user.description }}</p>
   <form action="" method="post">
     <button type="submit" class="btn btn-primary" name="create">Create post</button>
+    <button type="submit" class="btn btn-primary" name="edit-profile">Edit profile</button>
   </form>
   {% for post in posts %}
     <p>
