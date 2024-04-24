@@ -1,8 +1,8 @@
+import uuid
+
 from . import db_session
 from .post import Post
 from .user import User
-import uuid
-import datetime
 
 # db_session.global_init("db/y.db")
 
@@ -26,7 +26,7 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     # return user
 
 
-def create_post(username, text, is_answer=False, answer_to=None):
+def create_post(username, text, is_answer=False, answer_to=None) -> Post | None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     if user:
@@ -43,7 +43,7 @@ def create_post(username, text, is_answer=False, answer_to=None):
     return post
 
 
-def edit_user(username, name, description, email, hashed_password):
+def edit_user(username, name, description, email, hashed_password) -> None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     user.display_name = name
@@ -84,6 +84,7 @@ def get_user_by_username(username: str) -> User | None:
     return user
 
 
+# Typing nightmare >:(
 def dict_from_post(post):
     return {
         "id": post.id,

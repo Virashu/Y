@@ -136,7 +136,7 @@ def create_post():
         else:
             a = flask.request.values["answer_to"]
             back = flask.request.values["back"]
-            post = database.create_post(
+            _ = database.create_post(
                 user.username, form.text.data, is_answer=True, answer_to=a
             )
             return flask.redirect(f"/comments?post_id={a}&back={back}")
