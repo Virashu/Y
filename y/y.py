@@ -194,8 +194,10 @@ def edit_profile():
     return flask.render_template("edit_profile.html", form=form)
 
 
-@app.route("/comments", methods=["GET", "POST"])
-def comments_to_post():
+@app.route("/post", methods=["GET", "POST"])
+def post_details():
+    """Detailed post info"""
+
     if flask.request.method == "POST":
         if "answer" in flask.request.form:
             return flask.redirect(
@@ -203,6 +205,7 @@ def comments_to_post():
             )
         else:
             return flask.redirect(f"/{flask.request.values['back']}")
+
     username = flask.request.args.get("u", None)
     if username:
         user = database.get_user_by_username(username)
