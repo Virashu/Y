@@ -14,3 +14,9 @@ Like 𝕏, but 𝕐.
 poetry install
 poetry run start
 ```
+
+or
+
+```shell
+bash ./run.sh
+```
