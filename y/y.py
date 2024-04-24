@@ -43,12 +43,14 @@ def index():
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        user = database.create_user(
+        _ = database.create_user(
             form.username.data,
             form.display_name.data,
             form.email.data,
             form.password.data,
         )
+        user = database.get_user_by_username(form.username.data)
+
         if user:
             if flask_login.login_user(user, remember=form.remember_me.data):
                 return flask.redirect("/")

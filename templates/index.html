@@ -5,16 +5,17 @@
 {% endblock %}
 
 {% block content %}
-  <h1>Welcome to Y!</h1>
   {% for post in posts %}
-    <p>
-      {{ post.user_display_name }}
-      {{ post.creation_time }}
-      <br>
-      {{ post.text }}
+    <div class="post">
+      <div class="post-author">{{ post.user_display_name }}</div>
+      <div class="post-author-tag">{{ post.user_username }}</div>
+      <div class="post-time">{{ post.creation_time }}</div>
+      <div class="post-text">
+        {{ post.text }}
+      </div>
       <form action="" method="post">
-        <button type="submit" class="btn btn-primary" name={{post.id}}>See comments</button>
+        <button type="submit" class="btn btn-tertiary" name={{ post.id }}>See comments</button>
       </form>
-    </p>
+    </div>
   {% endfor %}
 {% endblock %}

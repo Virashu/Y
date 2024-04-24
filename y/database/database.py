@@ -23,7 +23,7 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     db_sess.add(user)
     db_sess.commit()
 
-    return user
+    # return user
 
 
 def create_post(username, text, is_answer=False, answer_to=None):
@@ -88,14 +88,16 @@ def get_user_by_username(username: str):
 
 
 def dict_from_post(post):
-    return {"id": post.id,
-            "author": post.author,
-            "text": post.text,
-            "creation_time": post.creation_time,
-            "editing_time": post.editing_time,
-            "is_answer": post.is_answer,
-            "answer_to": post.answer_to,
-            "user_display_name": post.user.display_name}
+    return {
+        "id": post.id,
+        "author": post.author,
+        "text": post.text,
+        "creation_time": post.creation_time,
+        "editing_time": post.editing_time,
+        "is_answer": post.is_answer,
+        "answer_to": post.answer_to,
+        "user_display_name": post.user.display_name,
+    }
 
 
 def get_all_posts():
@@ -115,7 +117,12 @@ def get_post_by_id(post_id):
 def get_posts_by_user(username):
     db_sess = db_session.create_session()
     res = []
-    for post in db_sess.query(Posts).filter(Posts.author == username).filter(Posts.is_answer == False).all():
+    for post in (
+        db_sess.query(Posts)
+        .filter(Posts.author == username)
+        .filter(Posts.is_answer == False)
+        .all()
+    ):
         res.append(dict_from_post(post))
     return res
 

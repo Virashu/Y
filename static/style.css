@@ -1,0 +1,24 @@
+.post {
+  border: 1px solid black;
+
+  padding: 10px;
+  border-radius: 10px;
+  margin: 10px 5px;
+}
+
+.post-author {
+  font-weight: 600;
+
+  display: inline;
+}
+
+.post-author-tag {
+  color: #a9a9a9;
+
+  display: inline;
+}
+
+.post-author-tag::before {
+  content: "@";
+}
+
