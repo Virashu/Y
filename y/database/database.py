@@ -1,5 +1,5 @@
 from . import db_session
-from .post import Posts
+from .post import Post
 from .user import User
 import uuid
 import datetime
@@ -30,7 +30,7 @@ def create_post(username, text, is_answer=False, answer_to=None):
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     if user:
-        post = Posts()
+        post = Post()
         post.id = str(uuid.uuid4())
         post.author = user.username
         post.text = text
@@ -54,34 +54,31 @@ def edit_user(username, name, description, email, hashed_password):
     db_sess.commit()
 
 
-def edit_post(post_id, text):
+def edit_post(post_id, text) -> None:
     db_sess = db_session.create_session()
-    post = db_sess.query(Posts).filter(Posts.id == post_id).first()
+    post = db_sess.query(Post).filter(Post.id == post_id).first()
     post.text = text
     db_sess.commit()
 
 
-def delete_user(username: str):
+def delete_user(username: str) -> None:
     db_sess = db_session.create_session()
     db_sess.query(User).filter(User.username == username).delete()
     db_sess.commit()
 
 
-def delete_post(post_id):
+def delete_post(post_id) -> None:
     db_sess = db_session.create_session()
-    db_sess.query(Posts).filter(Posts.id == post_id).delete()
+    db_sess.query(Post).filter(Post.id == post_id).delete()
     db_sess.commit()
 
 
-def get_all_users():
+def get_all_users() -> list[User]:
     db_sess = db_session.create_session()
-    res = []
-    for user in db_sess.query(User).all():
-        res.append(user)
-    return res
+    return db_sess.query(User).all()
 
 
-def get_user_by_username(username: str):
+def get_user_by_username(username: str) -> User | None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     return user
@@ -100,31 +97,25 @@ def dict_from_post(post):
     }
 
 
-def get_all_posts():
+def get_all_posts() -> list[Post]:
     db_sess = db_session.create_session()
-    res = []
-    for post in db_sess.query(Posts).filter(Posts.is_answer == False).all():
-        res.append(dict_from_post(post))
-    return res
+    # Why map to dict tho?
+    return db_sess.query(Post).filter(Post.is_answer == False).all()
 
 
-def get_post_by_id(post_id):
+def get_post_by_id(post_id) -> Post | None:
     db_sess = db_session.create_session()
-    post = db_sess.query(Posts).filter(Posts.id == post_id).first()
-    return dict_from_post(post)
+    return db_sess.query(Post).filter(Post.id == post_id).first()
 
 
-def get_posts_by_user(username):
+def get_posts_by_user(username) -> list[Post]:
     db_sess = db_session.create_session()
-    res = []
-    for post in (
-        db_sess.query(Posts)
-        .filter(Posts.author == username)
-        .filter(Posts.is_answer == False)
+    return (
+        db_sess.query(Post)
+        .filter(Post.author == username)
+        .filter(Post.is_answer == False)
         .all()
-    ):
-        res.append(dict_from_post(post))
-    return res
+    )
 
 
 def login_user(username: str, password: str) -> User | None:
@@ -136,9 +127,6 @@ def login_user(username: str, password: str) -> User | None:
         return user
 
 
-def get_answers_to_post(post_id):
+def get_answers_to_post(post_id) -> list[Post]:
     db_sess = db_session.create_session()
-    res = []
-    for post in db_sess.query(Posts).filter(Posts.answer_to == post_id).all():
-        res.append(dict_from_post(post))
-    return res
+    return db_sess.query(Post).filter(Post.answer_to == post_id).all()
