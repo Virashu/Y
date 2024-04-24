@@ -2,6 +2,7 @@ from . import db_session
 from .post import Posts
 from .user import User
 import uuid
+import datetime
 
 db_session.global_init("db/y.db")
 
@@ -53,7 +54,11 @@ def edit_user(username, name, description, email, hashed_password):
     db_sess.commit()
 
 
-def edit_post(): ...
+def edit_post(post_id, text):
+    db_sess = db_session.create_session()
+    post = db_sess.query(Posts).filter(Posts.id == post_id).first()
+    post.text = text
+    db_sess.commit()
 
 
 def delete_user(username: str):
@@ -62,7 +67,10 @@ def delete_user(username: str):
     db_sess.commit()
 
 
-def delete_post(): ...
+def delete_post(post_id):
+    db_sess = db_session.create_session()
+    db_sess.query(Posts).filter(Posts.id == post_id).delete()
+    db_sess.commit()
 
 
 def get_all_users():

@@ -90,9 +90,17 @@ def profile():
         if "create" in flask.request.form:
             return flask.redirect("/create-post")
         else:
-            request = flask.request.form.keys()
-            for r in request:
-                return flask.redirect(f"/comments?post_id={r}&back=profile")
+            request = flask.request.form.values()
+            if "comments" in flask.request.form:
+                for r in request:
+                    return flask.redirect(f"/comments?post_id={r}&back=profile")
+            elif "edit" in flask.request.form:
+                for r in request:
+                    return flask.redirect(f"/edit-post?post_id={r}")
+            else:
+                for r in request:
+                    database.delete_post(r)
+                    return flask.redirect(f"/profile")
 
     username = flask.request.args.get("u", None)
     if username:
@@ -137,6 +145,31 @@ def create_post():
             return flask.redirect(f"/comments?post_id={a}&back={back}")
     if form.cancel.data:
         return flask.redirect("/profile")
+    return flask.render_template("create_post.html", pages=pages, form=form)
+
+
+@app.route("/edit-post", methods=["GET", "POST"])
+def edit_post():
+    form = CreatePostForm()
+    if form.submit.data:
+        username = flask.request.args.get("u", None)
+        if username:
+            user = (
+                db_session.create_session()
+                .query(User)
+                .filter(User.username == username)
+                .first()
+            )
+        else:
+            user = flask_login.current_user
+            if not user:
+                return flask.redirect("/login")
+        database.edit_post(flask.request.values["post_id"], form.text.data)
+        return flask.redirect("/profile")
+    if form.cancel.data:
+        return flask.redirect("/profile")
+    post = database.get_post_by_id(flask.request.values["post_id"])
+    form.text.data = post["text"]
     return flask.render_template("create_post.html", pages=pages, form=form)
 
 
