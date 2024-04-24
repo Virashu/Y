@@ -31,14 +31,11 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-@app.route("/", methods=["GET", "POST"])
+@app.route("/", methods=["GET"])
 def index():
-    if flask.request.method == "POST":
-        request = flask.request.form.keys()
-        for r in request:
-            return flask.redirect(f"/comments?post_id={r}&back=")
     user = flask_login.current_user
     posts = database.get_all_posts()
+
     return flask.render_template("index.html", user=user, posts=posts[::-1])
 
 

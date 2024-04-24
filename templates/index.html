@@ -13,9 +13,11 @@
       <div class="post-text">
         {{ post.text }}
       </div>
-      <form action="" method="post">
-        <button type="submit" class="btn btn-tertiary" name={{ post.id }}>See comments</button>
-      </form>
+      <div class="post-comments">
+        <a href="/comments?post_id={{ post.id }}">
+          <button class="btn btn-tertiary" >See comments</button>
+        </a>
+      </div>
     </div>
   {% endfor %}
 {% endblock %}
