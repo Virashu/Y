@@ -33,7 +33,7 @@ class SignupForm(flask_wtf.FlaskForm):
 
 class CreatePostForm(flask_wtf.FlaskForm):
     text = wtforms.StringField(validators=[DataRequired()])
-    submit = wtforms.SubmitField("Create")
+    submit = wtforms.SubmitField("Save")
     cancel = wtforms.SubmitField("Cancel")
 
 
@@ -45,5 +45,5 @@ class EditProfileForm(flask_wtf.FlaskForm):
     )
     display_name = wtforms.StringField("Display name", validators=[DataRequired()])
     description = wtforms.StringField("Description", validators=[DataRequired()])
-    submit = wtforms.SubmitField("Create")
+    submit = wtforms.SubmitField("Save")
     cancel = wtforms.SubmitField("Cancel")
