@@ -7,6 +7,10 @@
     {{ post.text }}
   </div>
   <div class="post-comments">
+    <form action="" method="post" >
+      <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value={{post.id}}>♥</button>
+      {{ post.reactions }}
+    </form>
     <a href="/post?post_id={{ post.id }}&back=">
       <button class="btn btn-tertiary" >See comments</button>
     </a>

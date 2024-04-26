@@ -31,8 +31,13 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "POST"])
 def index():
+    if flask.request.method == "POST":
+        request = flask.request.form.values()
+        if "reaction" in flask.request.form:
+            for r in request:
+                database.reaction_to_post(r)
     user = flask_login.current_user
     posts = database.get_all_posts()
 
@@ -95,6 +100,9 @@ def profile():
             elif "edit" in flask.request.form:
                 for r in request:
                     return flask.redirect(f"/edit-post?post_id={r}")
+            elif "reaction" in flask.request.form:
+                for r in request:
+                    database.reaction_to_post(r)
             else:
                 for r in request:
                     database.delete_post(r)
@@ -142,11 +150,8 @@ def create_post():
         if "answer_to" not in flask.request.url:
             return flask.redirect("/profile")
         else:
-            print("")
             a = flask.request.values["answer_to"]
-            print(a)
             back = flask.request.values["back"]
-            print(f"/post?post_id={a}&back={back}")
             return flask.redirect(f"/post?post_id={a}&back={back}")
 
     return flask.render_template("create_post.html", form=form)

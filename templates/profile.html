@@ -19,6 +19,8 @@
       <br>
       {{ post.text }}
       <form action="" method="post" >
+        <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value={{post.id}}>♥</button>
+        {{ post.reactions }}
         <button type="submit" class="btn btn-primary" name="comments" value={{post.id}}>See comments</button>
         <button type="submit" class="btn btn-primary" name="edit" value={{post.id}}>Edit</button>
         <button type="submit" class="btn btn-primary" name="delete" value={{post.id}}>Delete</button>

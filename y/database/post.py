@@ -20,4 +20,5 @@ class Post(SqlAlchemyBase):
     editing_time = sqlalchemy.Column(sqlalchemy.DateTime, default=datetime.datetime.now)
     is_answer = sqlalchemy.Column(sqlalchemy.Boolean, default=False)
     answer_to = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    reactions = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     user = orm.relationship("User")
