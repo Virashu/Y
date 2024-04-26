@@ -37,7 +37,13 @@ def index():
         request = flask.request.form.values()
         if "reaction" in flask.request.form:
             for r in request:
-                database.reaction_to_post(r)
+                username = flask.request.args.get("u", None)
+                if not username:
+                    user = flask_login.current_user
+                    if not user or not user.is_authenticated:
+                        return flask.redirect("/login")
+                    username = user.username
+                database.reaction_to_post(r, username)
     user = flask_login.current_user
     posts = database.get_all_posts()
 
@@ -102,7 +108,13 @@ def profile():
                     return flask.redirect(f"/edit-post?post_id={r}")
             elif "reaction" in flask.request.form:
                 for r in request:
-                    database.reaction_to_post(r)
+                    username = flask.request.args.get("u", None)
+                    if not username:
+                        user = flask_login.current_user
+                        if not user or not user.is_authenticated:
+                            return flask.redirect("/login")
+                        username = user.username
+                    database.reaction_to_post(r, username)
             else:
                 for r in request:
                     database.delete_post(r)

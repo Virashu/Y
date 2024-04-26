@@ -133,8 +133,10 @@ def get_answers_to_post(post_id) -> list[Post]:
     return db_sess.query(Post).filter(Post.answer_to == post_id).all()
 
 
-def reaction_to_post(post_id) -> None:
+def reaction_to_post(post_id, username) -> None:
     db_sess = db_session.create_session()
     post = db_sess.query(Post).filter(Post.id == post_id).first()
-    post.reactions += 1
-    db_sess.commit()
+    if username not in post.reacted_users:
+        post.reactions += 1
+        post.reacted_users += username
+        db_sess.commit()
