@@ -22,4 +22,4 @@ class Post(SqlAlchemyBase):
     answer_to = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     reactions = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     reacted_users = sqlalchemy.Column(sqlalchemy.String, default="")
-    user = orm.relationship("User")
+    user = orm.relationship("User", lazy="joined")
