@@ -10,10 +10,16 @@
   </a>
 
   <div class="text-end">
-    {% if user and user.is_authenticated %}<a
+    {% if user and user.is_authenticated %}
+    <a
       href="{{ url_for('profile') + '?u=' + user.username }}"
     >
       <button type="button" class="btn btn-outline-light me-2">{{ user.display_name }}'s profile</button>
+    </a>
+    <a href="{{ url_for('login') }}">
+      <button type="button" class="btn btn-outline-light me-2">
+        Exit
+      </button>
     </a>
     {% else %}
     <!-- Login/Register -->

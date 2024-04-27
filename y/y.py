@@ -77,7 +77,9 @@ def signup():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
-
+    user = flask_login.current_user
+    if user:
+        flask_login.logout_user()
     form = LoginForm()
     if form.validate_on_submit():
         user = database.login_user(form.username.data, form.password.data)
