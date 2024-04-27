@@ -31,6 +31,11 @@ def load_user(user_id):
     return db_sess.query(User).get(user_id)
 
 
+@login_manager.unauthorized_handler
+def unauthorized():
+    return flask.redirect("/login")
+
+
 @app.route("/", methods=["GET", "POST"])
 def index():
     user = flask_login.current_user
@@ -39,8 +44,8 @@ def index():
         reaction = flask.request.form.get("reaction")
 
         if reaction:
-            if not user or not user.is_authenticated:
-                return flask.redirect("/login")
+            if not user.is_authenticated:
+                return unauthorized()
 
             database.reaction_to_post(reaction, user.username)
 
@@ -104,8 +109,8 @@ def profile():
 
             user = flask_login.current_user
 
-            if not user or not user.is_authenticated:
-                return flask.redirect("/login")
+            if not user.is_authenticated:
+                return unauthorized()
 
             database.reaction_to_post(post_id, user.username)
 
@@ -121,8 +126,8 @@ def profile():
             return flask.render_template("error.html", message="User Not Found")
     else:
         user = flask_login.current_user
-        if not user or not user.is_authenticated:
-            return flask.redirect("/login")
+        if not user.is_authenticated:
+            return unauthorized()
 
     posts = database.get_posts_by_user(user.username)  # type: ignore
 
@@ -138,8 +143,8 @@ def create_post():
             user = database.get_user_by_username(username)
         else:
             user = flask_login.current_user
-            if not user or not user.is_authenticated:
-                return flask.redirect("/login")
+            if not user.is_authenticated:
+                return unauthorized()
         if "answer_to" not in flask.request.url:
             post = database.create_post(user.username, form.text.data)
             return flask.redirect("/profile")
@@ -161,35 +166,43 @@ def create_post():
 
 
 @app.route("/edit-post", methods=["GET", "POST"])
+@flask_login.login_required
 def edit_post():
     form = CreatePostForm()
+
+    post_id = flask.request.args.get("post_id")
+
+    if not post_id:
+        return flask.render_template("error.html", message="Post Not Found")
+
     if form.submit.data:
-        username = flask.request.args.get("u", None)
-        if username:
-            user = database.get_user_by_username(username)
-        else:
-            user = flask_login.current_user
-            if not user:
-                return flask.redirect("/login")
-        database.edit_post(flask.request.values["post_id"], form.text.data)
+        text = form.text.data
+
+        database.edit_post(post_id, text)
         return flask.redirect("/profile")
+
     if form.cancel.data:
         return flask.redirect("/profile")
-    post = database.get_post_by_id(flask.request.values["post_id"])
+
+    post = database.get_post_by_id(post_id)
+
+    if not post:
+        return flask.render_template("error.html", message="Post Not Found")
+
+    if post.author != flask_login.current_user.username:
+        return flask.render_template("error.html", message="Post Not Found")
+
     form.text.data = post.text
     return flask.render_template("create_post.html", form=form)
 
 
 @app.route("/edit-profile", methods=["GET", "POST"])
+@flask_login.login_required
 def edit_profile():
     form = EditProfileForm()
-    username = flask.request.args.get("u", None)
-    if username:
-        user = database.get_user_by_username(username)
-    else:
-        user = flask_login.current_user
-        if not user or not user.is_authenticated:
-            return flask.redirect("/login")
+
+    user = flask_login.current_user
+
     if form.submit.data:
         database.edit_user(
             form.username.data,
@@ -222,16 +235,13 @@ def post_details():
         else:
             return flask.redirect(f"/{flask.request.values['back']}")
 
-    username = flask.request.args.get("u", None)
-    if username:
-        user = database.get_user_by_username(username)
-    else:
-        user = flask_login.current_user
-        if not user or not user.is_authenticated:
-            return flask.redirect("/login")
-    id = flask.request.values["post_id"]
-    post = database.get_post_by_id(id)
-    comments = database.get_answers_to_post(id)
+    user = flask_login.current_user
+
+    post_id = flask.request.values["post_id"]
+
+    post = database.get_post_by_id(post_id)
+    comments = database.get_answers_to_post(post_id)
+
     return flask.render_template(
         "post_with_comments.html", user=user, post=post, comments=comments
     )
