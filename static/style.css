@@ -22,3 +22,7 @@
   content: "@";
 }
 
+.post > a, form {
+  display: inline;
+}
+

@@ -115,7 +115,7 @@ def get_posts_by_user(username: str) -> list[Post]:
     return (
         db_sess.query(Post)
         .filter(Post.author == username)
-        .filter(~Post.is_answer)
+        .filter(Post.answer_to.is_(None))
         .all()
     )
 

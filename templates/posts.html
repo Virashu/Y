@@ -1,24 +1,27 @@
 {% for post in posts %}
-<div class="post">
-  <div class="post-author">{{ post.user.display_name }}</div>
-  <div class="post-author-tag">{{ post.user.username }}</div>
-  <div class="post-time">{{ post.creation_time }}</div>
-  <div class="post-text">{{ post.text }}</div>
-  <div class="post-comments">
-    <form action="" method="post">
-      <button
-        type="submit"
-        class="btn btn-outline-success btn-sm"
-        name="reaction"
-        value="{{ post.id }}"
-      >
-        ♥
-      </button>
-      {{ post.reactions }}
-    </form>
-    <a href="/post?post_id={{ post.id }}&back=">
-      <button class="btn btn-tertiary">See comments</button>
-    </a>
+  <div class="post">
+    <div class="post-author">{{ post.user.display_name }}</div>
+    <div class="post-author-tag">{{ post.user.username }}</div>
+    <div class="post-time">{{ post.creation_time }}</div>
+    <div class="post-text">{{ post.text }}</div>
+
+    <div class="post-comments">
+      <form action="" method="post">
+        <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value="{{ post.id }}">♥</button>
+        {{ post.reactions }}
+      </form>
+
+      <a href="/post?post_id={{ post.id }}&back="><button class="btn btn-tertiary">See comments</button></a>
+
+      {% if user.username == post.author %}
+        <a href="/edit-post?post_id={{ post.id }}&back="><button class="btn btn-tertiary">Edit</button></a>
+
+        {% if user.username == post.author %}
+          <form action="/delete-post" method="post">
+            <button type="submit" class="btn btn-tertiary" name="delete" value="{{ post.id }}">Delete</button>
+          </form>
+        {% endif %}
+      {% endif %}
+    </div>
   </div>
-</div>
 {% endfor %}

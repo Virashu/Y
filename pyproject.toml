@@ -6,7 +6,7 @@ authors = ["Vlad <89295404+Virashu@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.10"
 Flask = "^3.0.2"
 sqlalchemy = "^2.0.29"
 wtforms = "^3.1.2"

@@ -1,34 +1,16 @@
-{% extends "base.html" %}
+{% extends 'base.html' %}
 
 {% block title %}
   Y
 {% endblock %}
 
 {% block content %}
-  <h1>{{ user.display_name }} ({{ user.username }})</h1>
+  <h1>{{ user.display_name }} (@{{ user.username }})</h1>
 
   <p>{{ user.description }}</p>
-  <form action="" method="post">
-    <button type="submit" class="btn btn-secondary" name="edit-profile"></button>
-  </form>
 
   <a href="/create-post?back=profile">Create post</a>
   <a href="/edit-profile">Edit profile</a>
 
-  {% for post in posts %}
-    <p>
-      {{ post.user_display_name }}
-      {{ post.creation_time }}
-      <br>
-      {{ post.text }}
-      <form action="" method="post" >
-        <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value={{post.id}}>♥</button>
-        {{ post.reactions }}
-        <button type="submit" class="btn btn-secondary" name="delete" value={{post.id}}>Delete</button>
-      </form>
-
-      <a href="/post?post_id={{ post.id }}&back=profile">See comments</a>
-      <a href="/edit-post?post_id={{ post.id }}&back=profile">Edit</a>
-    </p>
-  {% endfor %}
+  {% include "posts.html" %}
 {% endblock %}

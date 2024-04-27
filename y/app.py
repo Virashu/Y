@@ -134,6 +134,26 @@ def profile():
     return flask.render_template("profile.html", user=user, posts=posts[::-1])
 
 
+@app.route("/delete-post", methods=["POST"])
+@flask_login.login_required
+def delete_post():
+    post_id = flask.request.form.get("delete")
+
+    if not post_id:
+        return flask.redirect("/profile")
+
+    user = flask_login.current_user
+    post = database.get_post_by_id(post_id)
+
+    if not post:
+        return flask.render_template("error.html", message="Post Not Found")
+
+    if user.username == post.author:
+        database.delete_post(post_id)
+
+    return flask.redirect("/profile")
+
+
 @app.route("/create-post", methods=["GET", "POST"])
 @flask_login.login_required
 def create_post():
