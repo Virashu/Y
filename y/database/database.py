@@ -1,4 +1,5 @@
 import uuid
+from typing import Optional, Any
 
 from . import db_session
 from .post import Post
@@ -13,12 +14,12 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     if db_sess.query(User).filter(User.username == username).first():
         return None  # User already exists
 
-    user = User()
-
-    user.username = username
-    user.display_name = display_name
-    user.email = email
-    user.hashed_password = hashed_password
+    user = User(
+        username=username,
+        display_name=display_name,
+        email=email,
+        hashed_password=hashed_password,
+    )
 
     db_sess.add(user)
     db_sess.commit()
@@ -26,26 +27,32 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     # return user
 
 
-def create_post(username, text, is_answer=False, answer_to=None) -> Post | None:
+def create_post(
+    username: str, text: str, is_answer: bool = False, answer_to: Optional[str] = None
+) -> Post | None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
     if user:
-        post = Post()
-        post.id = str(uuid.uuid4())
-        post.author = user.username
-        post.text = text
-        post.is_answer = is_answer
-        post.answer_to = answer_to
+        post = Post(
+            id=str(uuid.uuid4()),
+            author=user.username,
+            text=text,
+            is_answer=is_answer,
+            answer_to=answer_to,
+        )
+
         db_sess.add(post)
         db_sess.commit()
-    else:
-        return None
-    return post
+
+        return post
+
+    return None
 
 
 def edit_user(username, name, description, email, hashed_password) -> None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
+
     user.display_name = name
     user.description = description
     user.email = email
@@ -54,7 +61,7 @@ def edit_user(username, name, description, email, hashed_password) -> None:
     db_sess.commit()
 
 
-def edit_post(post_id, text) -> None:
+def edit_post(post_id: str, text: str) -> None:
     db_sess = db_session.create_session()
     post = db_sess.query(Post).filter(Post.id == post_id).first()
     post.text = text
@@ -67,7 +74,7 @@ def delete_user(username: str) -> None:
     db_sess.commit()
 
 
-def delete_post(post_id) -> None:
+def delete_post(post_id: str) -> None:
     db_sess = db_session.create_session()
     db_sess.query(Post).filter(Post.id == post_id).delete()
     db_sess.commit()
@@ -85,7 +92,7 @@ def get_user_by_username(username: str) -> User | None:
 
 
 # Typing nightmare >:(
-def dict_from_post(post):
+def dict_from_post(post: Post) -> dict[str, Any]:
     return {
         "id": post.id,
         "author": post.author,
@@ -135,7 +142,7 @@ def get_answers_to_post(post_id) -> list[Post]:
 
 def reaction_to_post(post_id, username) -> None:
     db_sess = db_session.create_session()
-    post = db_sess.query(Post).filter(Post.id == post_id).first()
+    post: Post | None = db_sess.query(Post).filter(Post.id == post_id).first()
     if username not in post.reacted_users:
         post.reactions += 1
         post.reacted_users += username
