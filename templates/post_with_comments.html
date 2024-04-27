@@ -16,13 +16,6 @@
     <button type="submit" class="btn btn-primary" name="answer">Answer</button>
     <button type="submit" class="btn btn-primary" name="cancel">Cancel</button>
   </form>
-  {% for comment in comments %}
-    <p>
-      <div class="post-author">{{ comment.user.display_name }}</div>
-      {{ comment.creation_time }}
-      <br>
-      Answer:
-      {{ comment.text }}
-    </p>
-  {% endfor %}
+  {% set posts = comments %}
+  {% include "posts.html" %}
 {% endblock %}

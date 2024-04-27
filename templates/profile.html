@@ -9,9 +9,12 @@
 
   <p>{{ user.description }}</p>
   <form action="" method="post">
-    <button type="submit" class="btn btn-primary" name="create">Create post</button>
-    <button type="submit" class="btn btn-primary" name="edit-profile">Edit profile</button>
+    <button type="submit" class="btn btn-secondary" name="edit-profile"></button>
   </form>
+
+  <a href="/create-post?back=profile">Create post</a>
+  <a href="/edit-profile">Edit profile</a>
+
   {% for post in posts %}
     <p>
       {{ post.user_display_name }}
@@ -21,10 +24,11 @@
       <form action="" method="post" >
         <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value={{post.id}}>♥</button>
         {{ post.reactions }}
-        <button type="submit" class="btn btn-primary" name="comments" value={{post.id}}>See comments</button>
-        <button type="submit" class="btn btn-primary" name="edit" value={{post.id}}>Edit</button>
-        <button type="submit" class="btn btn-primary" name="delete" value={{post.id}}>Delete</button>
+        <button type="submit" class="btn btn-secondary" name="delete" value={{post.id}}>Delete</button>
       </form>
+
+      <a href="/post?post_id={{ post.id }}&back=profile">See comments</a>
+      <a href="/edit-post?post_id={{ post.id }}&back=profile">Edit</a>
     </p>
   {% endfor %}
 {% endblock %}

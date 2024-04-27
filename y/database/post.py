@@ -11,10 +11,9 @@ class Post(SqlAlchemyBase):
 
     id = sql.Column(sql.String, primary_key=True, unique=True)
     author = sql.Column(sql.String, sql.ForeignKey("users.username"))
-    text = sql.Column(sql.String, nullable=True)
+    text = sql.Column(sql.String)
     creation_time = sql.Column(sql.DateTime, default=datetime.datetime.now)
     editing_time = sql.Column(sql.DateTime, default=datetime.datetime.now)
-    is_answer = sql.Column(sql.Boolean, default=False)
     answer_to = sql.Column(sql.String, nullable=True)
     reactions = sql.Column(sql.Integer, default=0)
     reacted_users = sql.Column(sql.String, default="")

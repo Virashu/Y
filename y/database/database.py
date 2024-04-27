@@ -1,14 +1,15 @@
+import datetime
 import uuid
-from typing import Optional, Any
+from typing import Optional
 
 from . import db_session
 from .post import Post
 from .user import User
 
-# db_session.global_init("db/y.db")
 
-
-def create_user(username, display_name, email, hashed_password) -> User | None:
+def create_user(
+    username: str, display_name: str, email: str, hashed_password: str
+) -> User | None:
     db_sess = db_session.create_session()
 
     if db_sess.query(User).filter(User.username == username).first():
@@ -24,47 +25,55 @@ def create_user(username, display_name, email, hashed_password) -> User | None:
     db_sess.add(user)
     db_sess.commit()
 
-    # return user
+    return user
 
 
 def create_post(
-    username: str, text: str, is_answer: bool = False, answer_to: Optional[str] = None
+    username: str, text: str, answer_to: Optional[str] = None
 ) -> Post | None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
-    if user:
-        post = Post(
-            id=str(uuid.uuid4()),
-            author=user.username,
-            text=text,
-            is_answer=is_answer,
-            answer_to=answer_to,
-        )
 
-        db_sess.add(post)
-        db_sess.commit()
+    if user is None:
+        return None
 
-        return post
+    post = Post(
+        id=str(uuid.uuid4()),
+        author=user.username,
+        text=text,
+        answer_to=answer_to,
+    )
 
-    return None
+    db_sess.add(post)
+    db_sess.commit()
+
+    return post
 
 
-def edit_user(username, name, description, email, hashed_password) -> None:
+def edit_user(
+    username: str, name: str, description: str, email: str, hashed_password: str
+) -> None:
     db_sess = db_session.create_session()
-    user = db_sess.query(User).filter(User.username == username).first()
 
-    user.display_name = name
-    user.description = description
-    user.email = email
-    user.hashed_password = hashed_password
+    db_sess.query(User).filter(User.username == username).update(
+        {
+            "display_name": name,
+            "description": description,
+            "email": email,
+            "hashed_password": hashed_password,
+        }
+    )
 
     db_sess.commit()
 
 
 def edit_post(post_id: str, text: str) -> None:
     db_sess = db_session.create_session()
-    post = db_sess.query(Post).filter(Post.id == post_id).first()
-    post.text = text
+    (
+        db_sess.query(Post)
+        .filter(Post.id == post_id)
+        .update({"text": text, "editing_time": datetime.datetime.now()})
+    )
     db_sess.commit()
 
 
@@ -91,37 +100,22 @@ def get_user_by_username(username: str) -> User | None:
     return user
 
 
-# Typing nightmare >:(
-def dict_from_post(post: Post) -> dict[str, Any]:
-    return {
-        "id": post.id,
-        "author": post.author,
-        "text": post.text,
-        "creation_time": post.creation_time,
-        "editing_time": post.editing_time,
-        "is_answer": post.is_answer,
-        "answer_to": post.answer_to,
-        "user_display_name": post.user.display_name,
-    }
-
-
 def get_all_posts() -> list[Post]:
     db_sess = db_session.create_session()
-    # Why map to dict tho?
-    return db_sess.query(Post).filter(Post.is_answer == False).all()
+    return db_sess.query(Post).filter(Post.answer_to.is_(None)).all()
 
 
-def get_post_by_id(post_id) -> Post | None:
+def get_post_by_id(post_id: str) -> Post | None:
     db_sess = db_session.create_session()
     return db_sess.query(Post).filter(Post.id == post_id).first()
 
 
-def get_posts_by_user(username) -> list[Post]:
+def get_posts_by_user(username: str) -> list[Post]:
     db_sess = db_session.create_session()
     return (
         db_sess.query(Post)
         .filter(Post.author == username)
-        .filter(Post.is_answer == False)
+        .filter(~Post.is_answer)
         .all()
     )
 
@@ -131,19 +125,34 @@ def login_user(username: str, password: str) -> User | None:
 
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
-    if user and user.hashed_password.__str__() == password:
+    if user and str(user.hashed_password) == password:
         return user
 
 
-def get_answers_to_post(post_id) -> list[Post]:
+def get_answers_to_post(post_id: str) -> list[Post]:
     db_sess = db_session.create_session()
     return db_sess.query(Post).filter(Post.answer_to == post_id).all()
 
 
-def reaction_to_post(post_id, username) -> None:
+def reaction_to_post(post_id: str, username: str) -> None:
     db_sess = db_session.create_session()
-    post: Post | None = db_sess.query(Post).filter(Post.id == post_id).first()
-    if username not in post.reacted_users:
-        post.reactions += 1
-        post.reacted_users += username
-        db_sess.commit()
+
+    post_query = (
+        db_sess.query(Post)
+        .filter(Post.id == post_id)
+        .filter(~Post.reacted_users.contains(username))
+    )
+
+    post = post_query.first()
+
+    if not post:
+        return
+
+    post_query.update(
+        {
+            "reactions": post.reactions + 1,
+            "reacted_users": post.reacted_users + username,
+        }
+    )
+
+    db_sess.commit()

@@ -33,34 +33,32 @@ def load_user(user_id):
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    if flask.request.method == "POST":
-        request = flask.request.form.values()
-        if "reaction" in flask.request.form:
-            for r in request:
-                username = flask.request.args.get("u", None)
-                if not username:
-                    user = flask_login.current_user
-                    if not user or not user.is_authenticated:
-                        return flask.redirect("/login")
-                    username = user.username
-                database.reaction_to_post(r, username)
     user = flask_login.current_user
-    posts = database.get_all_posts()
 
+    if flask.request.method == "POST":
+        reaction = flask.request.form.get("reaction")
+
+        if reaction:
+            if not user or not user.is_authenticated:
+                return flask.redirect("/login")
+
+            database.reaction_to_post(reaction, user.username)
+
+    posts = database.get_all_posts()
     return flask.render_template("index.html", user=user, posts=posts[::-1])
 
 
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     form = SignupForm()
+
     if form.validate_on_submit():
-        _ = database.create_user(
+        user = database.create_user(
             form.username.data,
             form.display_name.data,
             form.email.data,
             form.password.data,
         )
-        user = database.get_user_by_username(form.username.data)
 
         if user:
             if flask_login.login_user(user, remember=form.remember_me.data):
@@ -72,22 +70,28 @@ def signup():
             form=form,
             is_logged_in=False,
         )
+
     return flask.render_template("signup.html", form=form, is_logged_in=False)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
     user = flask_login.current_user
+
     if user:
         flask_login.logout_user()
+
     form = LoginForm()
+
     if form.validate_on_submit():
         user = database.login_user(form.username.data, form.password.data)
+
         if user:
             flask_login.login_user(user, remember=form.remember_me.data)
             return flask.redirect("/")
+
         return flask.render_template(
-            "login.html", message="Неправильный логин или пароль", form=form, user=user
+            "login.html", message="Wrong username or password", form=form, user=user
         )
 
     return flask.render_template("login.html", form=form, user=None)
@@ -96,44 +100,31 @@ def login():
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
     if flask.request.method == "POST":
-        if "create" in flask.request.form:
-            return flask.redirect("/create-post")
-        elif "edit-profile" in flask.request.form:
-            return flask.redirect("/edit-profile")
-        else:
-            request = flask.request.form.values()
-            if "comments" in flask.request.form:
-                for r in request:
-                    return flask.redirect(f"/post?post_id={r}&back=profile")
-            elif "edit" in flask.request.form:
-                for r in request:
-                    return flask.redirect(f"/edit-post?post_id={r}")
-            elif "reaction" in flask.request.form:
-                for r in request:
-                    username = flask.request.args.get("u", None)
-                    if not username:
-                        user = flask_login.current_user
-                        if not user or not user.is_authenticated:
-                            return flask.redirect("/login")
-                        username = user.username
-                    database.reaction_to_post(r, username)
-            else:
-                for r in request:
-                    database.delete_post(r)
-                    return flask.redirect("/profile")
+        if post_id := flask.request.form.get("reaction"):
+
+            user = flask_login.current_user
+
+            if not user or not user.is_authenticated:
+                return flask.redirect("/login")
+
+            database.reaction_to_post(post_id, user.username)
+
+        elif post_id := flask.request.form.get("delete"):
+            database.delete_post(post_id)
+            return flask.redirect("/profile")
 
     username = flask.request.args.get("u", None)
+
     if username:
         user = database.get_user_by_username(username)
         if not user:
-            # TODO: `Error: User Not Found`
             return flask.render_template("error.html", message="User Not Found")
     else:
         user = flask_login.current_user
         if not user or not user.is_authenticated:
             return flask.redirect("/login")
 
-    posts = database.get_posts_by_user(user.username)
+    posts = database.get_posts_by_user(user.username)  # type: ignore
 
     return flask.render_template("profile.html", user=user, posts=posts[::-1])
 
@@ -155,9 +146,7 @@ def create_post():
         else:
             a = flask.request.values["answer_to"]
             back = flask.request.values["back"]
-            _ = database.create_post(
-                user.username, form.text.data, is_answer=True, answer_to=a
-            )
+            _ = database.create_post(user.username, form.text.data, answer_to=a)
             return flask.redirect(f"/post?post_id={a}&back={back}")
 
     if form.cancel.data:

@@ -3,16 +3,21 @@
   <div class="post-author">{{ post.user.display_name }}</div>
   <div class="post-author-tag">{{ post.user.username }}</div>
   <div class="post-time">{{ post.creation_time }}</div>
-  <div class="post-text">
-    {{ post.text }}
-  </div>
+  <div class="post-text">{{ post.text }}</div>
   <div class="post-comments">
-    <form action="" method="post" >
-      <button type="submit" class="btn btn-outline-success btn-sm" name="reaction" value={{post.id}}>♥</button>
+    <form action="" method="post">
+      <button
+        type="submit"
+        class="btn btn-outline-success btn-sm"
+        name="reaction"
+        value="{{ post.id }}"
+      >
+        ♥
+      </button>
       {{ post.reactions }}
     </form>
     <a href="/post?post_id={{ post.id }}&back=">
-      <button class="btn btn-tertiary" >See comments</button>
+      <button class="btn btn-tertiary">See comments</button>
     </a>
   </div>
 </div>

@@ -1,3 +1,5 @@
+__all__ = ("global_init", "create_session", "SqlAlchemyBase")
+
 import sqlalchemy as sa
 import sqlalchemy.orm as orm
 from sqlalchemy.orm import Session
@@ -14,14 +16,12 @@ def global_init(db_file):
         return
 
     if not db_file or not db_file.strip():
-        raise Exception("Необходимо указать файл базы данных.")
+        raise Exception("Missing file argument")
 
     conn_str = f"sqlite:///{db_file.strip()}?check_same_thread=False"
 
     engine = sa.create_engine(conn_str, echo=False)
-    __factory = orm.sessionmaker(bind=engine)
-
-    from . import __all_models
+    __factory = orm.sessionmaker(engine)
 
     SqlAlchemyBase.metadata.create_all(engine)
 
