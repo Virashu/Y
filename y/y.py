@@ -127,7 +127,7 @@ def profile():
         user = database.get_user_by_username(username)
         if not user:
             # TODO: `Error: User Not Found`
-            raise NotImplementedError("User Not Found")
+            return flask.render_template("error.html", message="User Not Found")
     else:
         user = flask_login.current_user
         if not user or not user.is_authenticated:
