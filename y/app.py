@@ -135,24 +135,23 @@ def profile():
 
 
 @app.route("/create-post", methods=["GET", "POST"])
+@flask_login.login_required
 def create_post():
     form = CreatePostForm()
+
     if form.submit.data:
-        username = flask.request.args.get("u", None)
-        if username:
-            user = database.get_user_by_username(username)
-        else:
-            user = flask_login.current_user
-            if not user.is_authenticated:
-                return unauthorized()
-        if "answer_to" not in flask.request.url:
-            post = database.create_post(user.username, form.text.data)
-            return flask.redirect("/profile")
-        else:
-            a = flask.request.values["answer_to"]
-            back = flask.request.values["back"]
-            _ = database.create_post(user.username, form.text.data, answer_to=a)
-            return flask.redirect(f"/post?post_id={a}&back={back}")
+
+        username = flask_login.current_user.username
+
+        answer_to = flask.request.args.get("answer_to")
+
+        back = flask.request.values["back"]
+        post = database.create_post(username, form.text.data, answer_to)
+
+        if not post:
+            return flask.render_template("error.html", message="Error creating post")
+
+        return flask.redirect(f"/post?post_id={post.id}&back={back}")
 
     if form.cancel.data:
         if "answer_to" not in flask.request.url:
@@ -232,6 +231,15 @@ def post_details():
             return flask.redirect(
                 f"/create-post?answer_to={flask.request.values['post_id']}&back={flask.request.values['back']}"
             )
+
+        if reaction := flask.request.form.get("reaction"):
+            user = flask_login.current_user
+
+            if not user.is_authenticated:
+                return unauthorized()
+
+            database.reaction_to_post(reaction, user.username)
+
         else:
             return flask.redirect(f"/{flask.request.values['back']}")
 
@@ -241,6 +249,8 @@ def post_details():
 
     post = database.get_post_by_id(post_id)
     comments = database.get_answers_to_post(post_id)
+
+    comments.sort(key=lambda x: int(x.reactions), reverse=True)
 
     return flask.render_template(
         "post_with_comments.html", user=user, post=post, comments=comments
