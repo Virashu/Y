@@ -23,8 +23,8 @@ jobs:
       run: |
         pylint -f json2 $(git ls-files '*.py') | tee pylint.json
     - name: Archive production artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: Upload pylint.json
-          path: |
-            pylint.json
+      uses: actions/upload-artifact@v4
+      with:
+        name: Upload pylint.json
+        path: |
+          pylint.json
