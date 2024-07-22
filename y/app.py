@@ -5,6 +5,7 @@ import flask_login
 
 from .database import database, db_session
 from .database.user import User
+from .database.post import Post
 from .forms import CreatePostForm, EditProfileForm, LoginForm, SignupForm
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
@@ -26,19 +27,19 @@ db_session.global_init(f"{ROOT}/runtime/y.db")
 
 
 @login_manager.user_loader
-def load_user(user_id):
+def load_user(user_id: str) -> User | None:
     db_sess = db_session.create_session()
     return db_sess.query(User).get(user_id)
 
 
-@login_manager.unauthorized_handler
+@login_manager.unauthorized_handler  # type: ignore
 def unauthorized():
     return flask.redirect("/login")
 
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    user = flask_login.current_user
+    user: User = flask_login.current_user  # type: ignore
 
     if flask.request.method == "POST":
         reaction = flask.request.form.get("reaction")
@@ -47,10 +48,10 @@ def index():
             if not user.is_authenticated:
                 return unauthorized()
 
-            database.reaction_to_post(reaction, user.username)
+            database.reaction_to_post(reaction, str(user.username))
 
     posts = database.get_all_posts()
-    return flask.render_template("index.html", user=user, posts=posts[::-1])
+    return flask.render_template("index.html", user=user, posts=posts)
 
 
 @app.route("/signup", methods=["GET", "POST"])
@@ -107,12 +108,12 @@ def profile():
     if flask.request.method == "POST":
         if post_id := flask.request.form.get("reaction"):
 
-            user = flask_login.current_user
+            user: User = flask_login.current_user  # type: ignore
 
             if not user.is_authenticated:
                 return unauthorized()
 
-            database.reaction_to_post(post_id, user.username)
+            database.reaction_to_post(post_id, str(user.username))
 
         elif post_id := flask.request.form.get("delete"):
             database.delete_post(post_id)
@@ -125,13 +126,13 @@ def profile():
         if not user:
             return flask.render_template("error.html", message="User Not Found")
     else:
-        user = flask_login.current_user
+        user = flask_login.current_user  # type: ignore
         if not user.is_authenticated:
             return unauthorized()
 
     posts = database.get_posts_by_user(user.username)  # type: ignore
 
-    return flask.render_template("profile.html", user=user, posts=posts[::-1])
+    return flask.render_template("profile.html", user=user, posts=posts)
 
 
 @app.route("/delete-post", methods=["POST"])
@@ -142,13 +143,13 @@ def delete_post():
     if not post_id:
         return flask.redirect("/profile")
 
-    user = flask_login.current_user
+    user: User = flask_login.current_user  # type: ignore
     post = database.get_post_by_id(post_id)
 
     if not post:
         return flask.render_template("error.html", message="Post Not Found")
 
-    if user.username == post.author:
+    if str(user.username) == str(post.author):
         database.delete_post(post_id)
 
     return flask.redirect("/profile")
@@ -160,8 +161,9 @@ def create_post():
     form = CreatePostForm()
 
     if form.submit.data:
+        user: User = flask_login.current_user  # type: ignore
 
-        username = flask_login.current_user.username
+        username = str(user.username)
 
         answer_to = flask.request.args.get("answer_to")
 
@@ -174,12 +176,13 @@ def create_post():
         return flask.redirect(f"/post?post_id={post.id}&back={back}")
 
     if form.cancel.data:
-        if "answer_to" not in flask.request.url:
-            return flask.redirect("/profile")
-        else:
-            a = flask.request.values["answer_to"]
+        answer_to = flask.request.values.get("answer_to")
+
+        if answer_to:
             back = flask.request.values["back"]
-            return flask.redirect(f"/post?post_id={a}&back={back}")
+            return flask.redirect(f"/post?post_id={answer_to}&back={back}")
+        else:
+            return flask.redirect("/profile")
 
     return flask.render_template("create_post.html", form=form)
 
@@ -208,7 +211,9 @@ def edit_post():
     if not post:
         return flask.render_template("error.html", message="Post Not Found")
 
-    if post.author != flask_login.current_user.username:
+    user: User = flask_login.current_user  # type: ignore
+
+    if str(post.author) != str(user.username):
         return flask.render_template("error.html", message="Post Not Found")
 
     form.text.data = post.text
@@ -220,7 +225,7 @@ def edit_post():
 def edit_profile():
     form = EditProfileForm()
 
-    user = flask_login.current_user
+    user: User = flask_login.current_user  # type: ignore
 
     if form.submit.data:
         database.edit_user(
@@ -234,10 +239,10 @@ def edit_profile():
     if form.cancel.data:
         return flask.redirect("/profile")
 
-    form.username.data = user.username
-    form.email.data = user.email
-    form.display_name.data = user.display_name
-    form.description.data = user.description
+    form.username.data = str(user.username)
+    form.email.data = str(user.email)
+    form.display_name.data = str(user.display_name)
+    form.description.data = str(user.description)
 
     return flask.render_template("edit_profile.html", form=form)
 
@@ -253,24 +258,24 @@ def post_details():
             )
 
         if reaction := flask.request.form.get("reaction"):
-            user = flask_login.current_user
+            user: User = flask_login.current_user  # type: ignore
 
             if not user.is_authenticated:
                 return unauthorized()
 
-            database.reaction_to_post(reaction, user.username)
+            database.reaction_to_post(reaction, str(user.username))
 
         else:
             return flask.redirect(f"/{flask.request.values['back']}")
 
-    user = flask_login.current_user
+    user = flask_login.current_user  # type: ignore
 
     post_id = flask.request.values["post_id"]
 
-    post = database.get_post_by_id(post_id)
+    post: Post | None = database.get_post_by_id(post_id)
     comments = database.get_answers_to_post(post_id)
 
-    comments.sort(key=lambda x: int(x.reactions), reverse=True)
+    comments.sort(key=lambda x: int(str(x.reactions)), reverse=True)
 
     return flask.render_template(
         "post_with_comments.html", user=user, post=post, comments=comments

@@ -102,7 +102,12 @@ def get_user_by_username(username: str) -> User | None:
 
 def get_all_posts() -> list[Post]:
     db_sess = db_session.create_session()
-    return db_sess.query(Post).filter(Post.answer_to.is_(None)).all()
+    return (
+        db_sess.query(Post)
+        .filter(Post.answer_to.is_(None))
+        .order_by(Post.creation_time.desc())
+        .all()
+    )
 
 
 def get_post_by_id(post_id: str) -> Post | None:
@@ -131,7 +136,12 @@ def login_user(username: str, password: str) -> User | None:
 
 def get_answers_to_post(post_id: str) -> list[Post]:
     db_sess = db_session.create_session()
-    return db_sess.query(Post).filter(Post.answer_to == post_id).all()
+    return (
+        db_sess.query(Post)
+        .filter(Post.answer_to == post_id)
+        .order_by(Post.reactions.desc())
+        .all()
+    )
 
 
 def reaction_to_post(post_id: str, username: str) -> None:
