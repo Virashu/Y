@@ -2,9 +2,12 @@ import datetime
 import uuid
 from typing import Optional
 
-from . import db_session
+from ..config import DB_PATH
+from .db_session import SessionFactory
 from .post import Post
 from .user import User
+
+db_session = SessionFactory(DB_PATH)
 
 
 def create_user(
@@ -130,8 +133,11 @@ def login_user(username: str, password: str) -> User | None:
 
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
+
     if user and str(user.hashed_password) == password:
         return user
+
+    return None
 
 
 def get_answers_to_post(post_id: str) -> list[Post]:

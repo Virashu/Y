@@ -1,12 +1,12 @@
 import datetime
 from types import NotImplementedType
-from typing import Any, Literal, TypeAlias, TypeVar, Callable
+from typing import Any, Callable, Literal, TypeAlias, TypeVar
 
 from _typeshed import Incomplete
-from typing_extensions import deprecated
 from blinker import NamedSignal
-from flask import Flask, Response, Request
+from flask import Flask, Request, Response
 from flask.testing import FlaskClient
+from typing_extensions import deprecated
 
 __version__: str
 __all__ = [

@@ -1,33 +1,24 @@
-__all__ = ("global_init", "create_session", "SqlAlchemyBase")
+__all__ = ("SqlAlchemyBase", "SessionFactory")
 
 import sqlalchemy as sa
-import sqlalchemy.orm as orm
-from sqlalchemy.orm import Session
+from sqlalchemy import orm
 
 SqlAlchemyBase = orm.declarative_base()
 
-__factory = None
 
+class SessionFactory:
+    _factory: orm.sessionmaker[orm.Session] | None = None
 
-def global_init(db_file: str) -> None:
-    global __factory
+    def __init__(self, db_file: str) -> None:
+        db_url = f"sqlite:///{db_file.strip()}?check_same_thread=False"
 
-    if __factory:
-        return
+        engine = sa.create_engine(db_url, echo=False)
+        self._factory = orm.sessionmaker(engine)
 
-    if not db_file or not db_file.strip():
-        raise Exception("Missing file argument")
+        SqlAlchemyBase.metadata.create_all(engine)
 
-    conn_str = f"sqlite:///{db_file.strip()}?check_same_thread=False"
+    def create_session(self) -> orm.Session:
+        if self._factory is None:
+            raise RuntimeError("DB is not initialized")
 
-    engine = sa.create_engine(conn_str, echo=False)
-    __factory = orm.sessionmaker(engine)
-
-    SqlAlchemyBase.metadata.create_all(engine)
-
-
-def create_session() -> Session:
-    global __factory
-    if __factory is None:
-        raise RuntimeError("Call global_init() first")
-    return __factory()
+        return self._factory()

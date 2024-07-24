@@ -3,9 +3,10 @@ import pathlib
 import flask
 import flask_login
 
-from .database import database, db_session
-from .database.user import User
+from .database import database
+from .database.database import db_session
 from .database.post import Post
+from .database.user import User
 from .forms import CreatePostForm, EditProfileForm, LoginForm, SignupForm
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
@@ -21,9 +22,6 @@ app.config["SECRET_KEY"] = "huh"
 
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-
-
-db_session.global_init(f"{ROOT}/runtime/y.db")
 
 
 @login_manager.user_loader
@@ -181,8 +179,8 @@ def create_post():
         if answer_to:
             back = flask.request.values["back"]
             return flask.redirect(f"/post?post_id={answer_to}&back={back}")
-        else:
-            return flask.redirect("/profile")
+
+        return flask.redirect("/profile")
 
     return flask.render_template("create_post.html", form=form)
 
@@ -254,7 +252,9 @@ def post_details():
     if flask.request.method == "POST":
         if "answer" in flask.request.form:
             return flask.redirect(
-                f"/create-post?answer_to={flask.request.values['post_id']}&back={flask.request.values['back']}"
+                "/create-post"
+                + f"?answer_to={flask.request.values['post_id']}"
+                + f"&back={flask.request.values['back']}"
             )
 
         if reaction := flask.request.form.get("reaction"):

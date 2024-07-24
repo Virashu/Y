@@ -1,9 +1,9 @@
 import datetime
 
+import flask_login
 import sqlalchemy as sql
 
 from .db_session import SqlAlchemyBase
-import flask_login
 
 
 class User(SqlAlchemyBase, flask_login.UserMixin):
