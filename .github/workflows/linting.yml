@@ -37,7 +37,7 @@ jobs:
 
       - name: Analyze the code with pyright
         run: |
-          basedpyright $(git ls-files '*.py') > reports/pyright_report.txt
+          basedpyright $(git ls-files '*.py') > reports/pyright_report.txt || true
           basedpyright $(git ls-files '*.py') --outputjson | jq '.summary.errorCount' > pyright_errors.txt
 
       # Pylint
@@ -47,7 +47,7 @@ jobs:
 
       - name: Analyze the code with pylint
         run: |
-          pylint $(git ls-files '*.py') > reports/pylint_report.txt
+          pylint $(git ls-files '*.py') > reports/pylint_report.txt || true
           pylint -f json2 $(git ls-files '*.py') | jq '.statistics.score' > pylint_score.txt
 
       # Combine
