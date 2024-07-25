@@ -8,6 +8,7 @@ from .database.database import db_session
 from .database.post import Post
 from .database.user import User
 from .forms import CreatePostForm, EditProfileForm, LoginForm, SignupForm
+from .utils import hash_string, make_salt
 
 ROOT = str(pathlib.Path(__file__).parent.parent.resolve())  # Path of the project
 
@@ -56,12 +57,17 @@ def index():
 def signup():
     form = SignupForm()
 
-    if form.validate_on_submit():
+    if form.submit.data and form.validate_on_submit():
+        # salted
+        salt = make_salt()
+        password_str = hash_string(salt + form.password.data)
+
         user = database.create_user(
             form.username.data,
             form.display_name.data,
             form.email.data,
-            form.password.data,
+            password_str,
+            salt,
         )
 
         if user:
@@ -87,7 +93,7 @@ def login():
 
     form = LoginForm()
 
-    if form.validate_on_submit():
+    if form.submit.data and form.validate_on_submit():
         user = database.login_user(form.username.data, form.password.data)
 
         if user:

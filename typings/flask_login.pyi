@@ -1,6 +1,6 @@
 import datetime
 from types import NotImplementedType
-from typing import Any, Callable, Literal, TypeAlias, TypeVar
+from typing import Any, Callable, Literal, TypeAlias, TypeVar, overload, override
 
 from _typeshed import Incomplete
 from blinker import NamedSignal
@@ -69,7 +69,6 @@ USE_SESSION_FOR_NEXT: bool
 # mixins.py
 
 class UserMixin:
-    def __hash__(self: object) -> int: ...
     @property
     def is_active(self) -> Literal[True]: ...
     @property
@@ -77,7 +76,15 @@ class UserMixin:
     @property
     def is_anonymous(self) -> Literal[False]: ...
     def get_id(self) -> str: ...
+    @override
+    def __hash__(self) -> int: ...
+    @overload
+    def __eq__(self, other: UserMixin) -> bool: ...
+    @overload
     def __eq__(self, other: object) -> bool | NotImplementedType: ...
+    @overload
+    def __ne__(self, other: UserMixin) -> bool: ...
+    @overload
     def __ne__(self, other: object) -> bool | NotImplementedType: ...
 
 class AnonymousUserMixin:

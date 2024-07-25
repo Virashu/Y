@@ -1,3 +1,11 @@
+:root {
+  --bg-light: #ffffff;
+  --fg-light: #000000;
+
+  --bg-dark: #212529;
+  --fg-dark: #ffffff;
+}
+
 .post {
   border: 1px solid black;
 
@@ -26,3 +34,33 @@
   display: inline;
 }
 
+.y__header {
+  /*flex-wrap justify-content-center justify-content-md-between*/
+
+  padding: 1em;
+
+  background-color: var(--bg-dark);
+  color: var(--fg-dark);
+
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 1em;
+}
+
+.y__brand {
+  display: flex;
+  flex-direction: row;
+
+  align-items: center;
+  justify-items: center;
+
+  color: var(--fg-dark);
+
+  font-size: 1.5em;
+
+  text-decoration: none !important;
+}

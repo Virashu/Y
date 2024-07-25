@@ -2,7 +2,9 @@ import datetime
 import uuid
 from typing import Optional
 
-from ..config import DB_PATH
+from y.config import DB_PATH
+from y.utils import hash_string
+
 from .db_session import SessionFactory
 from .post import Post
 from .user import User
@@ -11,7 +13,7 @@ db_session = SessionFactory(DB_PATH)
 
 
 def create_user(
-    username: str, display_name: str, email: str, hashed_password: str
+    username: str, display_name: str, email: str, hashed_password: str, salt: str
 ) -> User | None:
     db_sess = db_session.create_session()
 
@@ -23,6 +25,7 @@ def create_user(
         display_name=display_name,
         email=email,
         hashed_password=hashed_password,
+        salt=salt,
     )
 
     db_sess.add(user)
@@ -134,7 +137,14 @@ def login_user(username: str, password: str) -> User | None:
     db_sess = db_session.create_session()
     user = db_sess.query(User).filter(User.username == username).first()
 
-    if user and str(user.hashed_password) == password:
+    if not user:
+        return None
+
+    salt = str(user.salt)
+
+    salted_password = hash_string(salt + password)
+
+    if str(user.hashed_password) == salted_password:
         return user
 
     return None
