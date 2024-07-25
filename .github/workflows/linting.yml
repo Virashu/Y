@@ -39,7 +39,6 @@ jobs:
         run: |
           basedpyright $(git ls-files '*.py') > reports/pyright_report.txt || true
           pyright_errors=$(basedpyright $(git ls-files '*.py') --outputjson | jq '.summary.errorCount')
-          echo ${pyright_errors} > pyright_errors.txt
 
           if [ ${pyright_errors} -eq 0 ]; then
             pyright_color="green"
@@ -49,7 +48,12 @@ jobs:
             pyright_color="red"
           fi
 
-          echo ${pyright_color} > pyright_color.txt
+          echo '{
+            "schemaVersion": 1,
+            "label": "Typing issues",
+            "message": "${pyright_errors}",
+            "color": "${pyright_color}"
+          }' > pyright_badge.json
 
       # Pylint
       - name: Install pylint
@@ -60,7 +64,6 @@ jobs:
         run: |
           pylint ./y > reports/pylint_report.txt || true
           pylint_score=$(pylint -f json2 ./y | jq '.statistics.score')
-          echo ${pylint_score} > pylint_score.txt
 
           if [ ${pylint_score} -gt 8 ]; then
             pylint_color="green"
@@ -70,12 +73,12 @@ jobs:
             pylint_color="red"
           fi
 
-          echo ${pylint_color} > pylint_color.txt
-
-      # Combine
-      - name: Combine results
-        run: |
-          echo '{"pyright_errors": $(cat pyright_errors.txt), "pyright_color": $(cat pyright_color.txt) "pylint_score": $(cat pylint_score.txt), "pylint_color": $(cat pylint_color.txt)}' > lint.json
+          echo '{
+            "schemaVersion": 1,
+            "label": "Typing issues",
+            "message": "${pylint_score}/10",
+            "color": "${pylint_color}"
+          }' > pylint_badge.json
 
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
@@ -91,7 +94,8 @@ jobs:
           name: nightly
           tag_name: nightly
           files: |
-            lint.json
+            pylint_badge.json
+            pyright_badge.json
             reports/*
           fail_on_unmatched_files: true
           token: ${{ secrets.GITHUB_TOKEN }}
