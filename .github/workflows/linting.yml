@@ -87,7 +87,7 @@ jobs:
         run: |
           echo '{
             "pyright_errors": '"$(cat pyright_errors.txt)"',
-            "pylint_score": '"$(cat pylint_score.txt)"',
+            "pylint_score": '"$(cat pylint_score.txt)"'
           }' > lint.json
 
       - name: Archive artifacts
