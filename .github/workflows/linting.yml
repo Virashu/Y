@@ -36,8 +36,9 @@ jobs:
         run: |
           black $(git ls-files '*.py')
       
-      - run: |
-        mkdir -p reports
+      - name: Create reportss
+        run: |
+          mkdir -p reports
 
       # Pyright
       - name: Install pyright
@@ -68,7 +69,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Upload lint.json
-          path: reports/*
+          path: |
+            reports/*
 
       - name: Release nightly
         uses: softprops/action-gh-release@v2 
