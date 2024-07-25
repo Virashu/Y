@@ -2,6 +2,9 @@ import pathlib
 
 import flask
 import flask_login
+import werkzeug
+
+from flask.typing import ResponseReturnValue
 
 from .database import database
 from .database.database import db_session
@@ -32,12 +35,12 @@ def load_user(user_id: str) -> User | None:
 
 
 @login_manager.unauthorized_handler  # type: ignore
-def unauthorized():
+def unauthorized() -> werkzeug.Response:
     return flask.redirect("/login")
 
 
 @app.route("/", methods=["GET", "POST"])
-def index():
+def index() -> ResponseReturnValue:
     user: User = flask_login.current_user  # type: ignore
 
     if flask.request.method == "POST":
@@ -54,8 +57,8 @@ def index():
 
 
 @app.route("/signup", methods=["GET", "POST"])
-def signup():
-    form = SignupForm()
+def signup() -> ResponseReturnValue:
+    form: SignupForm = SignupForm()
 
     if form.submit.data and form.validate_on_submit():
         # salted
@@ -85,16 +88,16 @@ def signup():
 
 
 @app.route("/login", methods=["GET", "POST"])
-def login():
-    user = flask_login.current_user
+def login() -> ResponseReturnValue:
+    user: User = flask_login.current_user  # type: ignore
 
     if user:
         flask_login.logout_user()
 
-    form = LoginForm()
+    form: LoginForm = LoginForm()
 
     if form.submit.data and form.validate_on_submit():
-        user = database.login_user(form.username.data, form.password.data)
+        user: User | None = database.login_user(form.username.data, form.password.data)
 
         if user:
             flask_login.login_user(user, remember=form.remember_me.data)
@@ -108,10 +111,9 @@ def login():
 
 
 @app.route("/profile", methods=["GET", "POST"])
-def profile():
+def profile() -> ResponseReturnValue:
     if flask.request.method == "POST":
-        if post_id := flask.request.form.get("reaction"):
-
+        if post_id := flask.request.form.get("reaction", None):
             user: User = flask_login.current_user  # type: ignore
 
             if not user.is_authenticated:
@@ -141,7 +143,7 @@ def profile():
 
 @app.route("/delete-post", methods=["POST"])
 @flask_login.login_required
-def delete_post():
+def delete_post() -> ResponseReturnValue:
     post_id = flask.request.form.get("delete")
 
     if not post_id:
@@ -161,7 +163,7 @@ def delete_post():
 
 @app.route("/create-post", methods=["GET", "POST"])
 @flask_login.login_required
-def create_post():
+def create_post() -> ResponseReturnValue:
     form = CreatePostForm()
 
     if form.submit.data:
@@ -193,7 +195,7 @@ def create_post():
 
 @app.route("/edit-post", methods=["GET", "POST"])
 @flask_login.login_required
-def edit_post():
+def edit_post() -> ResponseReturnValue:
     form = CreatePostForm()
 
     post_id = flask.request.args.get("post_id")
@@ -226,7 +228,7 @@ def edit_post():
 
 @app.route("/edit-profile", methods=["GET", "POST"])
 @flask_login.login_required
-def edit_profile():
+def edit_profile() -> ResponseReturnValue:
     form = EditProfileForm()
 
     user: User = flask_login.current_user  # type: ignore
@@ -252,7 +254,7 @@ def edit_profile():
 
 
 @app.route("/post", methods=["GET", "POST"])
-def post_details():
+def post_details() -> ResponseReturnValue:
     """Detailed post info"""
 
     if flask.request.method == "POST":

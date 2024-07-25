@@ -1,43 +1,36 @@
 import flask_wtf
 import wtforms
-from wtforms.validators import DataRequired
-
+from .form_fields import RequiredStringField, RequiredPasswordField
 from .utils import hash_string
 
 
 class LoginForm(flask_wtf.FlaskForm):
-    username = wtforms.StringField("Username", validators=[DataRequired()])
-    password = wtforms.PasswordField(
-        "Password", validators=[DataRequired()], filters=[hash_string]
-    )
+    username = RequiredStringField("Username")
+    password = RequiredPasswordField("Password", filters=[hash_string])
     remember_me = wtforms.BooleanField("Remember me")
     submit = wtforms.SubmitField("Log in")
 
 
 class SignupForm(flask_wtf.FlaskForm):
-    username = wtforms.StringField("Username", validators=[DataRequired()])
-    email = wtforms.StringField("Email", validators=[DataRequired()])
-    display_name = wtforms.StringField("Display name", validators=[DataRequired()])
-    password = wtforms.PasswordField(
-        "Password", validators=[DataRequired()], filters=[hash_string]
-    )
+    username = RequiredStringField("Username")
+    email = RequiredStringField("Email")
+    display_name = RequiredStringField("Display name")
+    password = RequiredPasswordField("Password", filters=[hash_string])
     remember_me = wtforms.BooleanField("Remember me")
     submit = wtforms.SubmitField("Sign up")
 
 
 class CreatePostForm(flask_wtf.FlaskForm):
-    text = wtforms.StringField(validators=[DataRequired()])
+    text = RequiredStringField()
     submit = wtforms.SubmitField("Save")
     cancel = wtforms.SubmitField("Cancel")
 
 
 class EditProfileForm(flask_wtf.FlaskForm):
-    username = wtforms.StringField("Username", validators=[DataRequired()])
-    email = wtforms.StringField("Email", validators=[DataRequired()])
-    password = wtforms.PasswordField(
-        "Password", validators=[DataRequired()], filters=[hash_string]
-    )
-    display_name = wtforms.StringField("Display name", validators=[DataRequired()])
-    description = wtforms.StringField("Description", validators=[DataRequired()])
+    username = RequiredStringField("Username")
+    email = RequiredStringField("Email")
+    password = RequiredPasswordField("Password", filters=[hash_string])
+    display_name = RequiredStringField("Display name")
+    description = RequiredStringField("Description")
     submit = wtforms.SubmitField("Save")
     cancel = wtforms.SubmitField("Cancel")
