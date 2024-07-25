@@ -70,3 +70,4 @@ jobs:
           tag_name: nightly
           files: lint.json
           fail_on_unmatched_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}
