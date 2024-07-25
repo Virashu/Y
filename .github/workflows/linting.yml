@@ -26,17 +26,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install pylint
           pip install -r requirements.txt
-
-      # Black
-      - name: Install black
-        run: |
-          pip install black
-
-      - name: Format the code with black
-        run: |
-          black $(git ls-files '*.py')
       
-      - name: Create reportss
+      - name: Create reports
         run: |
           mkdir -p reports
 
@@ -47,6 +38,7 @@ jobs:
 
       - name: Analyze the code with pyright
         run: |
+          set -e
           basedpyright $(git ls-files '*.py') > reports/pyright_report.txt
           basedpyright $(git ls-files '*.py') --outputjson | jq '.summary.errorCount' > pyright_errors.txt
 
@@ -57,6 +49,7 @@ jobs:
 
       - name: Analyze the code with pylint
         run: |
+          set -e
           pylint $(git ls-files '*.py') > reports/pylint_report.txt
           pylint -f json2 $(git ls-files '*.py') | jq '.statistics.score' > pylint_score.txt
 
