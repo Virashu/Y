@@ -1,0 +1,75 @@
+name: Linting
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        python-version: ["3.12"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pylint
+          pip install -r requirements.txt
+
+  black:
+    steps:
+      - name: Install black
+        run: |
+          pip install black
+
+      - name: Format the code with black
+        run: |
+          black $(git ls-files '*.py')
+
+  pyright:
+    steps:
+      - name: Install pyright
+        run: |
+          pip install basedpyright
+
+      - name: Analyze the code with pyright
+        run: |
+          basedpyright $(git ls-files '*.py') --outputjson | jq '.summary.errorCount' > pyright_errors.txt
+
+  pylint:
+    steps:
+      - name: Install pylint
+        run: |
+          pip install pylint
+      - name: Analyze the code with pylint
+        run: |
+          pylint -f json2 $(git ls-files '*.py') | jq '.statistics.score' > pylint_score.txt
+
+    # - name: Archive artifacts
+    #   uses: actions/upload-artifact@v4
+    #   with:
+    #     name: Upload pylint.json
+    #     path: |
+    #       pylint.json
+  finally:
+    steps:
+      - name: Combine results
+        run: |
+          echo "{ \"pyright_errors\": $(cat pyright_errors.txt), \"pylint_score\": $(cat pylint_score.txt) }" > lint.json
+
+      - name: Release nightly
+        uses: softprops/action-gh-release@v1
+        with:
+          prerelease: true
+          name: nightly
+          tag_name: nightly
+          files: lint.json
+          fail_on_unmatched_files: true

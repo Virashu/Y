@@ -23,3 +23,11 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pylint]
 disable = ["missing-module-docstring", "missing-class-docstring", "missing-function-docstring"]
+
+[tool.pyright]
+typeCheckingMode = "strict"
+analyzeUnannotatedFunctions = true
+reportImplicitOverride = true
+reportDeprecated = true
+reportAny = false
+
