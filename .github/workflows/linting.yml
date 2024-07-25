@@ -24,7 +24,7 @@ jobs:
           pip install pylint
           pip install -r requirements.txt
 
-    # Black
+      # Black
       - name: Install black
         run: |
           pip install black
@@ -33,7 +33,7 @@ jobs:
         run: |
           black $(git ls-files '*.py')
 
-    # Pyright
+      # Pyright
       - name: Install pyright
         run: |
           pip install basedpyright
@@ -42,7 +42,7 @@ jobs:
         run: |
           basedpyright $(git ls-files '*.py') --outputjson | jq '.summary.errorCount' > pyright_errors.txt
 
-    # Pylint
+      # Pylint
       - name: Install pylint
         run: |
           pip install pylint
@@ -51,10 +51,16 @@ jobs:
         run: |
           pylint -f json2 $(git ls-files '*.py') | jq '.statistics.score' > pylint_score.txt
 
-    # Combine
+      # Combine
       - name: Combine results
         run: |
           echo "{ \"pyright_errors\": $(cat pyright_errors.txt), \"pylint_score\": $(cat pylint_score.txt) }" > lint.json
+
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Upload lint.json
+          path: lint.json
 
       - name: Release nightly
         uses: softprops/action-gh-release@v1
