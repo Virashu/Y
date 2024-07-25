@@ -1,6 +1,7 @@
 import flask_wtf
 import wtforms
-from .form_fields import RequiredStringField, RequiredPasswordField
+
+from .form_fields import RequiredPasswordField, RequiredStringField
 from .utils import hash_string
 
 

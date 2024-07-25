@@ -1,9 +1,10 @@
 from typing import Any, Callable, Self, Sequence
+
+from _typeshed import Incomplete
 from wtforms import PasswordField, StringField
 from wtforms.form import BaseForm
 from wtforms.meta import DefaultMeta
 from wtforms.validators import DataRequired
-from _typeshed import Incomplete
 
 
 class RequiredStringField(StringField):
@@ -13,13 +14,14 @@ class RequiredStringField(StringField):
 
     data: str  # type: ignore
 
+    # pylint: disable=too-many-arguments  # (external class)
     def __init__(
         self,
         label: str | None = None,
         validators: tuple[Incomplete[Incomplete, Self], ...] | list[Any] | None = None,
         filters: Sequence[Incomplete] = (),
         description: str = "",
-        id: str | None = None,
+        id: str | None = None,  # pylint: disable=redefined-builtin  # (external class)
         default: str | Callable[[], str] | None = None,
         widget: Incomplete[Self] | None = None,
         render_kw: dict[str, Any] | None = None,
@@ -49,5 +51,4 @@ class RequiredStringField(StringField):
 
 
 class RequiredPasswordField(RequiredStringField, PasswordField):
-
     data: str  # type: ignore

@@ -16,13 +16,20 @@ flask-wtf = "^1.2.1"
 [tool.poetry.scripts]
 start = "y.cli:main"
 
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.2.6"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pylint]
-disable = ["missing-module-docstring", "missing-class-docstring", "missing-function-docstring"]
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+  "import-error",
+]
 
 [tool.pyright]
 typeCheckingMode = "strict"
@@ -31,3 +38,9 @@ reportImplicitOverride = true
 reportDeprecated = true
 reportAny = false
 stubPath = "./typings"
+
+[tool.isort]
+atomic = true
+profile = "black"
+line_length = 88
+skip_gitignore = true

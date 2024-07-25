@@ -6,6 +6,7 @@ from sqlalchemy import orm
 from .db_session import SqlAlchemyBase
 
 
+# pylint: disable=too-few-public-methods  # (ORM mapping class)
 class Post(SqlAlchemyBase):
     __tablename__ = "posts"
 

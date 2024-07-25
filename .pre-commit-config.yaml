@@ -1,3 +1,4 @@
+fail_fast: false
 repos:
   - repo: https://github.com/pycqa/isort
     rev: 5.13.2

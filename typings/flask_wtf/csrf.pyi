@@ -1,4 +1,5 @@
 from typing import Any, TypeVar, Union, override
+
 from flask import Blueprint, Flask
 from werkzeug.exceptions import BadRequest
 from wtforms import Field

@@ -47,8 +47,8 @@ jobs:
 
       - name: Analyze the code with pylint
         run: |
-          pylint $(git ls-files '*.py') > reports/pylint_report.txt || true
-          pylint -f json2 $(git ls-files '*.py') | jq '.statistics.score' > pylint_score.txt
+          pylint ./y > reports/pylint_report.txt || true
+          pylint -f json2 ./y | jq '.statistics.score' > pylint_score.txt
 
       # Combine
       - name: Combine results

@@ -3,7 +3,6 @@ import pathlib
 import flask
 import flask_login
 import werkzeug
-
 from flask.typing import ResponseReturnValue
 
 from .database import database

@@ -6,7 +6,9 @@ from sqlalchemy import orm
 SqlAlchemyBase = orm.declarative_base()
 
 
+# pylint: disable=too-few-public-methods
 class SessionFactory:
+    # pylint: disable=unsubscriptable-object  # (sessionmaker is Generic)
     _factory: orm.sessionmaker[orm.Session] | None = None
 
     def __init__(self, db_file: str) -> None:

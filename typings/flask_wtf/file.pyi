@@ -1,5 +1,6 @@
-from _typeshed import Incomplete
 from typing import Any, Iterable, TypeAlias, override
+
+from _typeshed import Incomplete
 
 __all__ = (
     "FileField",
@@ -13,11 +14,9 @@ __all__ = (
 )
 
 from werkzeug.datastructures import FileStorage
-from wtforms import (
-    Field,
-    FileField as _FileField,
-    MultipleFileField as _MultipleFileField,
-)
+from wtforms import Field
+from wtforms import FileField as _FileField
+from wtforms import MultipleFileField as _MultipleFileField
 from wtforms.form import BaseForm
 from wtforms.validators import DataRequired
 

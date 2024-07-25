@@ -51,7 +51,6 @@ class FlaskForm(Form):
         the method is ``POST``, ``PUT``, ``PATCH``, or ``DELETE``.
         """
         ...
-
     def validate_on_submit(
         self, extra_validators: dict[str, Sequence[Callable[..., bool]]] = ...
     ) -> bool:
@@ -59,7 +58,6 @@ class FlaskForm(Form):
         This is a shortcut for ``form.is_submitted() and form.validate()``.
         """
         ...
-
     def hidden_tag(self, *fields: str) -> Markup:
         """Render the form's hidden fields in one call.
 
