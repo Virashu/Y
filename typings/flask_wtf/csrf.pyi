@@ -1,10 +1,14 @@
+from typing import Any, TypeVar, Union, override
+from flask import Blueprint, Flask
 from werkzeug.exceptions import BadRequest
-from wtforms.csrf.core import CSRF
+from wtforms import Field
+from wtforms.csrf.core import CSRF, CSRFTokenField
+from wtforms.form import BaseForm
 
 __all__ = ("generate_csrf", "validate_csrf", "CSRFProtect")
 logger = ...
 
-def generate_csrf(secret_key=..., token_key=...) -> Any:
+def generate_csrf(secret_key: str = ..., token_key: str = ...) -> Any:
     """Generate a CSRF token. The token is cached for a request, so multiple
     calls to this function will generate the same token.
 
@@ -18,7 +22,9 @@ def generate_csrf(secret_key=..., token_key=...) -> Any:
     """
     ...
 
-def validate_csrf(data, secret_key=..., time_limit=..., token_key=...) -> None:
+def validate_csrf(
+    data: str, secret_key: str = ..., time_limit: int = ..., token_key: str = ...
+) -> None:
     """Check if the given data is a valid CSRF token. This compares the given
     signed token to the one stored in the session.
 
@@ -39,9 +45,12 @@ def validate_csrf(data, secret_key=..., time_limit=..., token_key=...) -> None:
     ...
 
 class _FlaskFormCSRF(CSRF):
-    def setup_form(self, form) -> list[tuple[str, UnboundField[Any]]]: ...
-    def generate_csrf_token(self, csrf_token_field) -> Any: ...
-    def validate_csrf_token(self, form, field) -> None: ...
+    @override
+    def generate_csrf_token(self, csrf_token_field: CSRFTokenField) -> Any: ...
+    @override
+    def validate_csrf_token(self, form: BaseForm, field: Field) -> None: ...
+
+_T = TypeVar("_T", bound=Union[Blueprint, str, Any])
 
 class CSRFProtect:
     """Enable CSRF protection globally for a Flask app.
@@ -58,10 +67,10 @@ class CSRFProtect:
     See the :ref:`csrf` documentation.
     """
 
-    def __init__(self, app=...) -> None: ...
-    def init_app(self, app) -> None: ...
+    def __init__(self, app: Flask | None = ...) -> None: ...
+    def init_app(self, app: Flask) -> None: ...
     def protect(self) -> None: ...
-    def exempt(self, view) -> Blueprint | str:
+    def exempt(self, view: _T) -> _T:
         """Mark a view or blueprint to be excluded from CSRF protection.
 
         ::
@@ -87,6 +96,6 @@ class CSRFError(BadRequest):
     :meth:`flask.Flask.errorhandler`.
     """
 
-    description = ...
+    description: str
 
-def same_origin(current_uri, compare_uri): ...
+def same_origin(current_uri: str, compare_uri: str) -> bool: ...

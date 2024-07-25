@@ -30,4 +30,4 @@ analyzeUnannotatedFunctions = true
 reportImplicitOverride = true
 reportDeprecated = true
 reportAny = false
-
+stubPath = "./typings"
